@@ -1,15 +1,18 @@
+const User =  require('../models/user.js');
 
-const permission = (req, res, next) => {
-    const { id } = req.params;
+const permission = async (req, res, next) => {
+    //const { id } = req.params;
+    // const { roles, groups} = req.body;
     
-    const roles = `SELECT roles FROM USER WHERE id = ${id}`;
-    const groups = `SELECT groups FROM USER WHERE id = ${id}`;
+    
+    // const userRole = await User.findOne({where: {roles: roles}})
+    // const userGroup = await User.findOne({where: {groups: groups}});
 
-    if (roles.length && groups.length) {
-        next()
-    } else {
-        return res.status(401).json('You do not have permission to perform this operation')
-    }
+    // if (userRole.length && userGroup.length) {
+    //     next()
+    // } else {
+    //     return res.status(401).json('You do not have permission to perform this operation')
+    // }
 }
 
 module.exports = permission;

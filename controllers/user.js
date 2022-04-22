@@ -45,16 +45,16 @@ exports.signup = async (req, res) => {
 }
 
 exports.getUser = async (req, res) => {
-    //const { roles } = req.body;
+    const { roles } = req.body;
     const { id } = req.params; 
 
-    if(!req.userId) return res.status(404).send({message: 'Unathenticated user'});
+    if(!req.id) return res.status(404).send({message: 'Unathenticated user'});
 
     try {
         const user = await User.findById(id);
-        const roles = `SELECT roles FROM USER WHERE id = ${id}`;
+        const userRoles = await User.findOne({ where: { roles: roles}});
 
-        if(roles.length && !roles.includes(roles.Admin)) {
+        if(userRoles.length && !userRoles.includes(Admin)) {
             // user's role is not authorized
             //only an admin can access this route
             return res.status(401).json({ message: 'Unauthorized, only an admin user can access this route' });
@@ -68,19 +68,19 @@ exports.getUser = async (req, res) => {
 }
 
 exports.getUsers = async (req, res) => { 
-    const { id } = req.params;
-    //const { role, group } = req.body;
+    //const { id } = req.params;
+    const { roles, groups } = req.body;
 
-    if(!req.userId) return res.status(404).send({message: 'Unathenticated user'});
+    //if(!req.id) return res.status(404).send({message: 'Unathenticated user'});
 
 
     try {
         const users = await User.findAll();
-        const roles = `SELECT roles FROM USER WHERE id = ${id}`;
-        const groups = `SELECT groups FROM USER WHERE id = ${id}`;
+        const userRole = await User.findOne({where: {roles: roles}})
+        const userGroup = await User.findOne({where: {groups: groups}});
 
         
-        if(roles.length &&  groups.length && groups.includes(groups.Management) && !roles.includes(roles.Admin) ) {
+        if(userRole.length &&  userGroup.length && userGroup.includes(Management) && !userGroup.includes(Admin) ) {
             // user's role is not authorized
             //only an admin that belong to management group can access this route
             return res.status(401).json({ message: 'Unauthorized, only an admin that belong to management group can access this route' });
@@ -89,6 +89,6 @@ exports.getUsers = async (req, res) => {
         res.status(200).json(users)
 
     } catch(error) {
-        
+        console.log(error);
     }
 }

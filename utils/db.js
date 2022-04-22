@@ -6,10 +6,10 @@ const mysql = require("mysql2");
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: password,
+  password: "Security123@",
 });
 
-const sequelize = new Sequelize(database, user, password,
+const sequelize = new Sequelize('exercise', 'root', 'Security123@',
  {dialect: 'mysql', host: 'localhost'});
 
  module.exports = sequelize;
