@@ -1,9 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const {User, Role, Group} =  require('../models/user');
-const roleEnum = require('../utils/role');
-const groupEnum = require('../utils/group');
+const {User, Role, Group, UserRoles} =  require('../models/user');
 
 exports.signin = async (req, res) => {
     const { email, password } = req.body;
@@ -16,7 +14,7 @@ exports.signin = async (req, res) => {
 
         if(!isPasswordCorrect) return res.status(404).json({message: 'Invalid Credentials'});
 
-        const token = jwt.sign({email: existingUser.email, id: existingUser._id}, 'delete', { expiresIn: "3h" });
+        const token = jwt.sign({email: existingUser.email, id: existingUser.id}, 'delete', { expiresIn: "3h" });
 
         res.status(200).json({result: existingUser, token});
 
@@ -36,10 +34,12 @@ exports.signup = async (req, res) => {
 
         const saveRole = await Role.create({roleName});
         const saveGroup = await Group.create({groupName});
+        
         console.log(saveRole, saveGroup);
         const result = await User.create({email, password: hashedPassword, name});
-
-        const token = jwt.sign({email: result.email, id: result._id}, 'delete', { expiresIn: "3h" });
+        const save = await UserRoles.create({roleId: saveRole.id, groupId: saveGroup.id, userId: result.id});
+        console.log(save);
+        const token = jwt.sign({email: result.email, id: result.id}, 'delete', { expiresIn: "3h" });
 
         return res.status(200).json({result, saveRole, saveGroup, token});
 
@@ -50,12 +50,9 @@ exports.signup = async (req, res) => {
 }
 
 exports.getUser = async (req, res) => {
-    //const { roles } = req.body;
+    
     const { id } = req.params; 
 
-    //if(!req.userId) return res.status(404).send({message: 'Unathenticated user'});
-    //console.log(req.userId);
-    console.log(id);
     try {
         const user = await User.findOne({ where: {id: id} });
         
@@ -67,13 +64,7 @@ exports.getUser = async (req, res) => {
 }
 
 exports.getUsers = async (req, res) => { 
-    const { id } = req.params;
-    //const { roles, groups } = req.body;
-
-   //if(!req.userId) return res.status(404).send({message: 'Unathenticated user'});
-
-   //console.log(req.userId);
-   console.log(id);
+    
     try {
         const users = await User.findAll();
 

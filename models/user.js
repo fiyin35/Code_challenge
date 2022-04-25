@@ -48,11 +48,35 @@ const Group = sequelize.define('group', {
     },
 });
 
-User.hasMany(Role);
-User.hasMany(Group);
-Role.belongsTo(User);
-Group.belongsTo(User);
+const UserRoles = sequelize.define('userRoles', {
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+    },
+    roleId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignkey: true
+    },
+    groupId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignkey: true
+    },
+    userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        foreignkey: true
+    },
+})
+
+
+UserRoles.belongsTo(User, {foreignkey: 'userId'});
+UserRoles.belongsTo(Role, {foreignkey: 'roleId'});
+UserRoles.belongsTo(Group, {foreignkey: 'groupId'});
 
 
 
-module.exports = {User, Role, Group};
+module.exports = {User, Role, Group, UserRoles};
