@@ -19,8 +19,6 @@ const permission = (roles = []) => {
             }
             UserRoles.findAll({where: {userId: req.params.id}, include: [{model: Group}, {model: Role}], raw: true}).then((user) => {
                 if(!user) throw new Error('User not found');
-                console.log(user);
-
 
                 user.forEach((element) => {
                     if(roles != element['role.roleName']) {

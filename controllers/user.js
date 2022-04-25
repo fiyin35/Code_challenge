@@ -35,10 +35,8 @@ exports.signup = async (req, res) => {
         const saveRole = await Role.create({roleName});
         const saveGroup = await Group.create({groupName});
         
-        console.log(saveRole, saveGroup);
         const result = await User.create({email, password: hashedPassword, name});
         const save = await UserRoles.create({roleId: saveRole.id, groupId: saveGroup.id, userId: result.id});
-        console.log(save);
         const token = jwt.sign({email: result.email, id: result.id}, 'delete', { expiresIn: "3h" });
 
         return res.status(200).json({result, saveRole, saveGroup, token});
